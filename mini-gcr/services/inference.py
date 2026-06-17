@@ -101,39 +101,83 @@ class InferenceService:
         return [int(item) for item in candidates if int(item) not in excluded][:top_k]
 
     def recommend(self, item_seq, top_k=5, use_constraint=True, use_model=True):
+        """Generate up to `top_k` recommendations for the given item sequence.
+
+        Returns a dict so the caller (FastAPI / eval script) can see *how*
+        each item was produced: "model" (from beam search / generate) or
+        "fallback" (from the complementary-pair table). This replaces the
+        previous behaviour which silently degraded to fallback when the
+        model was unavailable, making it impossible to tell at the call
+        site whether the minGPT model was actually used.
+        """
+        # P1-3: explicit non-silent reporting
         if not item_seq:
-            return []
-            
+            return {
+                "recommendations": [],
+                "model_used": False,
+                "fallback_used": False,
+                "warning": "empty item_seq",
+            }
+
         core_item_id = int(item_seq[-1])
         valid_items = self.comp_map.get(core_item_id, set())
         recommendations = []
         sampled_items = set()
-        
+        model_used = False
+        fallback_used = False
+        warnings: list[str] = []
+
+        # P1-3: log when the user asked for model output but we cannot serve it
+        if use_model and not self.model_loaded:
+            warnings.append("model_loaded=False; falling back to complementary-pair table")
+        if use_model and (not self.item2tokens or not self.token2item):
+            warnings.append("token maps missing; falling back to complementary-pair table")
+
         if use_model and self.model_loaded and self.item2tokens and self.token2item:
             tokens = self._tokens_from_items(item_seq)
             x = torch.tensor([tokens], dtype=torch.long).to(self.device)
+            attempts = 0
             for _ in range(max(top_k, 1)):
+                attempts += 1
                 if use_constraint and valid_items:
-                    out_tokens = constrained_beam_search(self.model, x, TOKENS_PER_ITEM, beam_size=5, valid_items=valid_items, token2item=self.token2item)
+                    out_tokens = constrained_beam_search(
+                        self.model, x, TOKENS_PER_ITEM, beam_size=5,
+                        valid_items=valid_items, token2item=self.token2item,
+                    )
                 else:
-                    out_tokens = generate(self.model, x, TOKENS_PER_ITEM, temperature=1.0, top_k=32)
-                
+                    out_tokens = generate(
+                        self.model, x, TOKENS_PER_ITEM, temperature=1.0, top_k=32
+                    )
+
                 gen_tokens = out_tokens[0, -TOKENS_PER_ITEM:].tolist()
                 gen_item_id = self.token2item.get(str(gen_tokens), None)
-            
+
                 if gen_item_id and int(gen_item_id) not in sampled_items and int(gen_item_id) not in item_seq:
                     if not use_constraint or not valid_items or int(gen_item_id) in valid_items:
-                        recommendations.append(self._make_recommendation(core_item_id, int(gen_item_id), use_constraint))
+                        rec = self._make_recommendation(core_item_id, int(gen_item_id), use_constraint)
+                        rec["source"] = "model"
+                        recommendations.append(rec)
                         sampled_items.add(int(gen_item_id))
-                
+                        model_used = True
+
                 if len(recommendations) >= top_k:
                     break
+            if model_used == False and attempts > 0:
+                warnings.append("model produced no usable items in top_k attempts")
 
         for item_id in self._fallback_items(core_item_id, item_seq, top_k * 2, use_constraint):
             if item_id not in sampled_items:
-                recommendations.append(self._make_recommendation(core_item_id, item_id, use_constraint))
+                rec = self._make_recommendation(core_item_id, item_id, use_constraint)
+                rec["source"] = "fallback"
+                recommendations.append(rec)
                 sampled_items.add(item_id)
+                fallback_used = True
             if len(recommendations) >= top_k:
                 break
-                
-        return recommendations[:top_k]
+
+        return {
+            "recommendations": recommendations[:top_k],
+            "model_used": model_used,
+            "fallback_used": fallback_used,
+            "warnings": warnings,
+        }

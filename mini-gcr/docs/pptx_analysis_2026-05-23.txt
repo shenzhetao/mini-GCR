@@ -1,0 +1,62 @@
+Total number of slides: 11
+
+Slide Layout Names Used:
+  Layout 0: TITLE
+  Layout 1: OBJECT
+  Layout 2: SECTION_HEADER
+  Layout 3: TWO_OBJECTS
+  Layout 4: TWO_OBJECTS_WITH_TEXT
+  Layout 5: TITLE_ONLY
+  Layout 6: BLANK
+  Layout 7: OBJECT_WITH_CAPTION_TEXT
+  Layout 8: PICTURE_WITH_CAPTION_TEXT
+  Layout 9: VERTICAL_TEXT
+  Layout 10: VERTICAL_TITLE_AND_VERTICAL_TEXT
+
+============================================================
+SLIDE DETAILS
+============================================================
+
+Slide 1:
+  Title: 基于生成式推荐的支付界面与购物车互补品推荐算法研究
+  Number of shapes: 5
+
+Slide 2:
+  Title: 背景与痛点
+  Number of shapes: 35
+
+Slide 3:
+  Title: 基础推荐方法: 冷启动场景
+  Number of shapes: 17
+
+Slide 4:
+  Title: 基础推荐方法: 协同过滤场景
+  Number of shapes: 22
+
+Slide 5:
+  Title: 问题定义与相关工作
+  Number of shapes: 27
+
+Slide 6:
+  Title: 系统架构与技术方案
+  Number of shapes: 37
+
+Slide 7:
+  Title: 评估、成果与创新
+  Number of shapes: 33
+
+Slide 8:
+  Title: 数据方案
+  Number of shapes: 29
+
+Slide 9:
+  Title: 项目计划与时间线
+  Number of shapes: 69
+
+Slide 10:
+  Title: 可行性分析与风险应对
+  Number of shapes: 40
+
+Slide 11:
+  Title: Q & A
+  Number of shapes: 5

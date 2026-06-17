@@ -19,7 +19,7 @@ def main():
     
     # 3. Build Complementary Pairs and Tokens
     run_cmd("python scripts/build_complementary.py")
-    run_cmd("python scripts/tokenize.py")
+    run_cmd("python scripts/build_tokens.py")
     
     # 4. Train Models
     # Uncomment below to actually train. Takes time.

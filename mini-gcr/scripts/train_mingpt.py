@@ -62,7 +62,8 @@ def train_mingpt():
     model = GPT(mconf)
     
     tconf = TrainerConfig(max_epochs=MINGPT_EPOCHS, batch_size=MINGPT_BATCH_SIZE, learning_rate=MINGPT_LR,
-                          num_workers=0, ckpt_path=str(CHECKPOINTS_DIR / "mingpt.pth"))
+                          num_workers=0, ckpt_path=str(CHECKPOINTS_DIR / "mingpt.pth"),
+                          patience=8, eval_every=1, max_eval_batches=4)
     trainer = Trainer(model, train_dataset, val_dataset, tconf)
     trainer.train()
     

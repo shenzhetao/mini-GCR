@@ -71,10 +71,10 @@ def eval_all():
         inp_seq = seq[:-1]
         core_item_id = inp_seq[-1]
         
-        full_recs = inference_service.recommend(inp_seq, top_k=10, use_constraint=True, use_model=True)
-        full_ids = [r['item_id'] for r in full_recs]
-        weak_recs = inference_service.recommend(inp_seq, top_k=10, use_constraint=False, use_model=True)
-        weak_ids = [r['item_id'] for r in weak_recs]
+        full_result = inference_service.recommend(inp_seq, top_k=10, use_constraint=True, use_model=True)
+        full_ids = [r['item_id'] for r in full_result['recommendations']]
+        weak_result = inference_service.recommend(inp_seq, top_k=10, use_constraint=False, use_model=True)
+        weak_ids = [r['item_id'] for r in weak_result['recommendations']]
 
         inp_padded = inp_seq[-MAX_SEQ_LENGTH:]
         if len(inp_padded) < MAX_SEQ_LENGTH:
@@ -103,9 +103,7 @@ def eval_all():
             })
 
         total += 1
-        if total >= 100:
-            break
-            
+
     summary = pd.DataFrame([
         summarize(metric_rows, "Full model"),
         summarize(metric_rows, "w/o Constraint"),

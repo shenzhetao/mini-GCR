@@ -1,8 +1,8 @@
 import sys, os
 sys.path.append(os.path.dirname(os.path.abspath(__file__)) if 'scripts' not in os.path.abspath(__file__) else os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import pandas as pd
-import ast
 from config import RAW_DATA_DIR, PROCESSED_DATA_DIR, USER_SEQ_FILE, SPLITS_DIR, TRAIN_FILE, VAL_FILE, TEST_FILE
+import ast
 
 def preprocess_data():
     raw_file = RAW_DATA_DIR / "tmall_sample.csv"

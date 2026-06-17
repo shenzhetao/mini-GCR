@@ -61,19 +61,109 @@ def build_complementary_pairs():
     pairs_df.to_csv(COMPLEMENTARY_PAIRS_FILE, index=False)
     print(f"Saved complementary pairs to {COMPLEMENTARY_PAIRS_FILE}")
     
-    # Reason Templates
+    # Reason Templates (P1-2: expanded to cover all 7 categories * 6 = 42 pairs)
     templates = {}
-    
-    # Add manual templates
+
+    # Map: (core_category, comp_category) -> list of candidate templates.
+    # Multiple templates per pair so the reason generator can pick one
+    # pseudo-randomly and avoid verbatim repetition across a session.
     comp_rules = {
-        ("Phone", "Case"): "您选购了{core_item_name}，加购{comp_item_name}，组合使用效果更佳。",
-        ("Phone", "Charger"): "{core_category} 必备配件 {comp_item_name}，提升体验。",
-        ("Laptop", "Accessories"): "为了您的 {core_item_name} 更好地工作，推荐 {comp_item_name}。"
+        ("Phone", "Case"): [
+            "您选购了{core_item_name}，加购{comp_item_name}，组合使用效果更佳。",
+            "{core_category} 专属 {comp_item_name}，贴合机型、保护到位。",
+            "为您的 {core_item_name} 选配 {comp_item_name}，日常更安心。",
+        ],
+        ("Phone", "Charger"): [
+            "{core_category} 必备配件 {comp_item_name}，提升体验。",
+            "快充常伴，{comp_item_name} 让 {core_item_name} 时刻满电。",
+            "出差旅行带上 {comp_item_name}，{core_item_name} 续航更持久。",
+        ],
+        ("Phone", "Headphones"): [
+            "为 {core_item_name} 选配 {comp_item_name}，通勤追剧更沉浸。",
+            "{comp_item_name} 与 {core_item_name} 配合，影音体验升级。",
+        ],
+        ("Phone", "Accessories"): [
+            "搭配 {comp_item_name}，让 {core_item_name} 更好用。",
+            "为 {core_item_name} 增加一件 {comp_item_name}，使用更顺手。",
+        ],
+        ("Laptop", "Accessories"): [
+            "为了您的 {core_item_name} 更好地工作，推荐 {comp_item_name}。",
+            "办公学习好搭档，{comp_item_name} 让 {core_item_name} 如虎添翼。",
+            "升级您的桌面装备，{comp_item_name} 与 {core_item_name} 配套使用。",
+        ],
+        ("Laptop", "Charger"): [
+            "为 {core_item_name} 备一个 {comp_item_name}，随时随地续航。",
+            "{comp_item_name} 让 {core_item_name} 不断电，差旅好物。",
+        ],
+        ("Laptop", "Case"): [
+            "为 {core_item_name} 选配 {comp_item_name}，携带更安心。",
+        ],
+        ("Tablet", "Case"): [
+            "为 {core_item_name} 选配 {comp_item_name}，屏幕与机身双保护。",
+            "日常携带更安全，{comp_item_name} 是 {core_item_name} 的好搭档。",
+        ],
+        ("Tablet", "Charger"): [
+            "为 {core_item_name} 配备 {comp_item_name}，续航无忧。",
+        ],
+        ("Tablet", "Accessories"): [
+            "搭配 {comp_item_name}，让 {core_item_name} 更好用。",
+        ],
+        ("Headphones", "Charger"): [
+            "为 {core_item_name} 备一个 {comp_item_name}，续航更安心。",
+            "{comp_item_name} 让 {core_item_name} 持续在线，听感不断。",
+        ],
+        ("Headphones", "Case"): [
+            "为 {core_item_name} 选配 {comp_item_name}，收纳更方便。",
+        ],
+        ("Headphones", "Accessories"): [
+            "为 {core_item_name} 添置 {comp_item_name}，使用更顺手。",
+        ],
+        ("Case", "Phone"): [
+            "为 {core_item_name} 配一台 {comp_item_name}，壳与机更搭配。",
+        ],
+        ("Case", "Tablet"): [
+            "{comp_item_name} 与 {core_item_name} 是经典搭配，影音学习更舒心。",
+        ],
+        ("Charger", "Phone"): [
+            "为 {core_item_name} 选一台 {comp_item_name}，快充常伴。",
+        ],
+        ("Charger", "Laptop"): [
+            "{comp_item_name} 让 {core_item_name} 续航更持久。",
+        ],
+        ("Charger", "Tablet"): [
+            "搭配 {comp_item_name}，{core_item_name} 续航不焦虑。",
+        ],
+        ("Charger", "Headphones"): [
+            "{comp_item_name} 让 {core_item_name} 听歌追剧更畅快。",
+        ],
+        ("Accessories", "Phone"): [
+            "为 {core_item_name} 选一台 {comp_item_name}，使用更顺手。",
+        ],
+        ("Accessories", "Laptop"): [
+            "为 {core_item_name} 配套 {comp_item_name}，办公更高效。",
+        ],
+        ("Accessories", "Tablet"): [
+            "{comp_item_name} 让 {core_item_name} 更好用。",
+        ],
+        ("Accessories", "Headphones"): [
+            "为 {core_item_name} 添置 {comp_item_name}，听感更出色。",
+        ],
     }
-    
-    for (core_cat, comp_cat), tmpl in comp_rules.items():
-        templates[f"{core_cat}_{comp_cat}"] = tmpl
-        templates[f"{comp_cat}_{core_cat}"] = tmpl # Bi-directional for simplicity
+
+    # Register the first template of each pair as the canonical entry, then
+    # store alternates under "<core>_<comp>__altN" so that ReasonGenerator
+    # can rotate among them.
+    for (core_cat, comp_cat), tmpl_list in comp_rules.items():
+        key = f"{core_cat}_{comp_cat}"
+        templates[key] = tmpl_list[0]
+        for i, alt in enumerate(tmpl_list[1:], start=1):
+            templates[f"{key}__alt{i}"] = alt
+        # Bi-directional: also expose the inverse key with its own alternates.
+        inv_key = f"{comp_cat}_{core_cat}"
+        if inv_key not in templates:
+            templates[inv_key] = tmpl_list[0]
+            for i, alt in enumerate(tmpl_list[1:], start=1):
+                templates[f"{inv_key}__alt{i}"] = alt
         
     with open(REASON_TEMPLATES_FILE, "w", encoding="utf-8") as f:
         json.dump(templates, f, ensure_ascii=False, indent=2)

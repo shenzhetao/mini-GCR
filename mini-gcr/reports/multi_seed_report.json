@@ -1,0 +1,188 @@
+{
+  "seeds": [
+    1,
+    2,
+    3
+  ],
+  "n_samples_per_seed": 100,
+  "per_seed": [
+    {
+      "seed": 1,
+      "rows": [
+        {
+          "model": "Baseline SASRec",
+          "target": 256.48,
+          "HR@5": 0.01,
+          "HR@10": 0.02,
+          "NDCG@10": 0.0068788280289852,
+          "ComplementaryRatio@10": 0.072
+        },
+        {
+          "model": "Full model",
+          "target": 256.48,
+          "HR@5": 0.2,
+          "HR@10": 0.33,
+          "NDCG@10": 0.1825260554775544,
+          "ComplementaryRatio@10": 1.0
+        },
+        {
+          "model": "w/o Constraint",
+          "target": 256.48,
+          "HR@5": 0.01,
+          "HR@10": 0.03,
+          "NDCG@10": 0.0108791374084539,
+          "ComplementaryRatio@10": 0.077
+        }
+      ]
+    },
+    {
+      "seed": 2,
+      "rows": [
+        {
+          "model": "Baseline SASRec",
+          "target": 256.48,
+          "HR@5": 0.01,
+          "HR@10": 0.02,
+          "NDCG@10": 0.0068788280289852,
+          "ComplementaryRatio@10": 0.072
+        },
+        {
+          "model": "Full model",
+          "target": 256.48,
+          "HR@5": 0.2,
+          "HR@10": 0.33,
+          "NDCG@10": 0.1825260554775544,
+          "ComplementaryRatio@10": 1.0
+        },
+        {
+          "model": "w/o Constraint",
+          "target": 256.48,
+          "HR@5": 0.01,
+          "HR@10": 0.03,
+          "NDCG@10": 0.0108791374084539,
+          "ComplementaryRatio@10": 0.078
+        }
+      ]
+    },
+    {
+      "seed": 3,
+      "rows": [
+        {
+          "model": "Baseline SASRec",
+          "target": 256.48,
+          "HR@5": 0.01,
+          "HR@10": 0.02,
+          "NDCG@10": 0.0068788280289852,
+          "ComplementaryRatio@10": 0.072
+        },
+        {
+          "model": "Full model",
+          "target": 256.48,
+          "HR@5": 0.2,
+          "HR@10": 0.33,
+          "NDCG@10": 0.1825260554775544,
+          "ComplementaryRatio@10": 1.0
+        },
+        {
+          "model": "w/o Constraint",
+          "target": 256.48,
+          "HR@5": 0.01,
+          "HR@10": 0.03,
+          "NDCG@10": 0.0108791374084539,
+          "ComplementaryRatio@10": 0.077
+        }
+      ]
+    }
+  ],
+  "per_model_summary": {
+    "Baseline SASRec": {
+      "HR@5": {
+        "mean": 0.01,
+        "std": 0.0
+      },
+      "HR@10": {
+        "mean": 0.02,
+        "std": 0.0
+      },
+      "NDCG@10": {
+        "mean": 0.0068788280289852,
+        "std": 0.0
+      },
+      "ComplementaryRatio@10": {
+        "mean": 0.072,
+        "std": 0.0
+      }
+    },
+    "Full model": {
+      "HR@5": {
+        "mean": 0.20000000000000004,
+        "std": 3.3993498887762956e-17
+      },
+      "HR@10": {
+        "mean": 0.33,
+        "std": 0.0
+      },
+      "NDCG@10": {
+        "mean": 0.1825260554775544,
+        "std": 0.0
+      },
+      "ComplementaryRatio@10": {
+        "mean": 1.0,
+        "std": 0.0
+      }
+    },
+    "w/o Constraint": {
+      "HR@5": {
+        "mean": 0.01,
+        "std": 0.0
+      },
+      "HR@10": {
+        "mean": 0.03,
+        "std": 0.0
+      },
+      "NDCG@10": {
+        "mean": 0.0108791374084539,
+        "std": 0.0
+      },
+      "ComplementaryRatio@10": {
+        "mean": 0.07733333333333332,
+        "std": 0.0005773502691896263
+      }
+    }
+  },
+  "t_tests": {
+    "HR@5": {
+      "t": 9680958542239176.0,
+      "p_value": 1.0669971991065014e-32
+    },
+    "HR@10": {
+      "t": Infinity,
+      "p_value": 0.0
+    },
+    "NDCG@10": {
+      "t": Infinity,
+      "p_value": 0.0
+    },
+    "ComplementaryRatio@10": {
+      "t": Infinity,
+      "p_value": 0.0
+    }
+  },
+  "noise_summary": [
+    {
+      "seed": 1,
+      "mean_rank": 96.2,
+      "stdev": 18.61719635176038
+    },
+    {
+      "seed": 2,
+      "mean_rank": 96.2,
+      "stdev": 18.61719635176038
+    },
+    {
+      "seed": 3,
+      "mean_rank": 96.2,
+      "stdev": 18.61719635176038
+    }
+  ]
+}
